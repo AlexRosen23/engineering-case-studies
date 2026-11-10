@@ -120,7 +120,8 @@ data scale, validation before analysis, the main test and its null result, and e
   checklists and backlog IDs were removed. gitleaks found no leaks, and a scan for emails, phone numbers, paths and
   keys came back clean. The repository was created public on my explicit OK, with GitHub Actions disabled before
   the first push and commits under the GitHub noreply address. Single commit `5176467`.
-- **2026-11-09:** this README, rewritten to the same structure as my other project READMEs.
+- **2026-11-09:** this README, rewritten to the same structure as my other project READMEs
+  ([PR #1](https://github.com/AlexRosen23/engineering-case-studies/pull/1)).
 
 Two decisions shaped the content:
 
@@ -148,6 +149,8 @@ The drafts were written with Claude Code from the evidence bank, and I approved 
 |---|---|
 | `case-studies/` | the four case studies (Markdown with Mermaid) |
 | `README.md` | this file |
+| `.githooks/` | gitleaks pre-commit and pre-push hooks (enable with `git config core.hooksPath .githooks`) |
+| `.gitleaks.toml`, `.gitignore` | secret-scan settings and the ignore baseline (no `.env`, keys, databases or dependencies) |
 
 ## Testing and CI
 
