@@ -16,7 +16,7 @@ systems. The write-ups say which decisions were mine.
 | **Status** | Published. Four case studies, each a point-in-time snapshot measured on 2026-11-08. |
 | **Format** | Markdown with Mermaid diagrams. No code to run. |
 | **Read it** | Start with the table in [Case studies](#case-studies) below. |
-| **Verified** | 2026-11-09 against `main` at `5176467`: links and diagrams checked, sanitization re-checked ([how](#testing-and-ci)) |
+| **Verified** | 2026-11-11 against `main` at `7434488`: links and diagrams checked, sanitization re-checked ([how](#testing-and-ci)) |
 
 ## Why this exists
 
@@ -122,6 +122,8 @@ data scale, validation before analysis, the main test and its null result, and e
   the first push and commits under the GitHub noreply address. Single commit `5176467`.
 - **2026-11-09:** this README, rewritten to the same structure as my other project READMEs
   ([PR #1](https://github.com/AlexRosen23/engineering-case-studies/pull/1)).
+- **2026-11-10:** docs: link merged README PR; map hook files; hooks point to README
+  ([PR #2](https://github.com/AlexRosen23/engineering-case-studies/pull/2)).
 
 Two decisions shaped the content:
 
