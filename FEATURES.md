@@ -46,12 +46,14 @@ A public documentation repository. It holds four sanitized write-ups of private 
 - **How the work was built:** solo projects, with AI coding agents (mainly Claude Code) as implementers and Codex for read-only review. The owner sets requirements and safety rules, reviews and merges every change, and runs the systems.
 
 ## 2. How to run it
-There is nothing to install or run. Read the files on GitHub, where the Mermaid diagrams render.
+There is no app to run. Read the files on GitHub, where the Mermaid diagrams render.
 
 To read locally:
 1. `git clone https://github.com/AlexRosen23/engineering-case-studies.git`
 2. `cd engineering-case-studies`
 3. `ls case-studies/` (four Markdown files)
+
+Checker (added 2026-11-16): `./scripts/run` checks sections, Mermaid blocks, relative links and a sanitization scan (Python 3, read-only). Its tests: `python3 -m unittest discover -s tests -v`.
 
 Optional, for contributors: `git config core.hooksPath .githooks` turns on the secret-scan hooks (needs `gitleaks` installed). No environment variables, ports or dev servers.
 
@@ -106,7 +108,7 @@ All four share one outline so they can be compared: problem and audience, role, 
 - The Second Move's aggregate Kaggle notebook is *Planned* (see section 8).
 
 ## 7. Tests and evidence
-- There is no code and no test suite. Counted from source on 2026-11-15, not run.
+- There is no application code. `scripts/check.py` (links, sections, diagrams, sanitization scan) and `tests/test_check.py` (8 tests) were added 2026-11-16; both pass on this branch.
 - Recorded checks (README, 2026-11-09): every relative link resolves to a file; each case study has the listed sections and one Mermaid block; a scan for emails, phone numbers, local paths and key-like strings found nothing.
 - Recorded (README): gitleaks and a pattern scan before the first push on 2026-11-08; README verified on 2026-11-11 against `main`.
 - Figures inside the case studies are a 2026-11-08 snapshot measured in the private repos and are not re-measured here.
@@ -121,6 +123,7 @@ All four share one outline so they can be compared: problem and audience, role, 
 ## 9. Change log
 | Date | PR | Change |
 | --- | --- | --- |
+| 2026-11-16 | this PR | Added `scripts/check.py`, `scripts/run`, `tests/` and a "Run it" README section. |
 | 2026-11-11 | #3 | README: refresh verified ref, add PR #2 to history |
 | 2026-11-10 | #2 | Link the merged README PR; map the hook files; hooks point to README |
 | 2026-11-09 | #1 | Full README write-up (why the source is private, how case studies are made) |

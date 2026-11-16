@@ -91,6 +91,22 @@ cd engineering-case-studies
 ls case-studies/        # four Markdown files
 ```
 
+## Run it
+
+There is no app to serve. The only thing to run is the checker for the write-ups: it confirms each case study has its
+required sections and a Mermaid diagram, that relative links resolve, and that a scan for emails, phone numbers,
+local paths and key-like strings finds nothing. It needs Python 3 and reads files only.
+
+```
+./scripts/run
+```
+
+Run the checker's own tests:
+
+```
+python3 -m unittest discover -s tests -v
+```
+
 ## How it works
 
 ```mermaid
@@ -156,7 +172,8 @@ The drafts were written with Claude Code from the evidence bank, and I approved 
 
 ## Testing and CI
 
-There is no code and no test suite. For this README (2026-11-09) I checked that every relative link resolves to a
+There is no application code. `scripts/check.py` automates the checks below, and `tests/` tests the checker (see
+[Run it](#run-it)). For this README (2026-11-09) I first checked by hand that every relative link resolves to a
 file, that each case study has the sections listed above and one Mermaid block, and that a scan for email addresses,
 phone numbers, local file paths and key-like strings finds nothing.
 
