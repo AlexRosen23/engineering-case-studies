@@ -13,3 +13,8 @@ node_modules/
 __pycache__/
 *.pyc
 .DS_Store
+
+# built reading site (scripts/serve)
+_site/
+# local-only map from private-repository citations to their PRs, commits and files (scripts/check.py --online)
+*.local.json
