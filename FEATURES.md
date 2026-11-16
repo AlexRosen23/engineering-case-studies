@@ -1,30 +1,30 @@
 # Engineering Case Studies: features
 
-A public documentation repository. It holds four sanitized write-ups of private software projects: what each one does, how it is built, how it was tested, what went wrong and what was measured. It is for engineers and reviewers who want to judge the work without access to the private source. The one thing it does best is show failures, limits and sources next to the results.
+A public documentation repository with a small local reading site. It holds six sanitized case studies of private software projects: context, problem, constraints, approach, evidence, results with how they were measured, trade-offs, and what I'd do differently. Every figure is cited to the pull request, commit, file or test output it comes from; sources in private repositories are cited as dated plain text, never as links, hashes or paths. It is for engineers and reviewers who want to judge the work without access to the private source. The one thing it does best is show failures, limits and sources next to the results.
 
 **This is the source-of-truth features list.** Every PR that adds, changes, removes or switches off something a person can see or use updates this file in the same PR (see "Keeping this file true").
 
 - **Repo:** AlexRosen23/engineering-case-studies (public) · **Folder:** `~/Desktop/Claude Projects/Engineering Case Studies`
-- **Status:** Published (documentation only, no code) · **Version:** none · **`main`:** `b63fe99` (2026-11-15)
-- **Last updated:** 2026-11-15, written from the README, the case-study files, the git hooks and the PR history.
+- **Status:** Published (documentation plus a static local site) · **Version:** none · **`main`:** `665be2c` before this PR
+- **Last updated:** 2026-11-16, written from the case studies, the checker, the site builder and the PR history.
 
 **Status words** (a feature with no status word is live):
 | Word | Means |
 | --- | --- |
-| *Live* | on `main` and readable on GitHub |
+| *Live* | on `main` and readable on GitHub or through `./scripts/serve` |
+| *In this PR* | added or changed by the open PR named in the change log, not merged yet |
 | *Planned* | named in the README as a next step, not done |
 
 ## At a glance
 | | |
 | --- | --- |
-| Kind | Documentation repository. Markdown with Mermaid diagrams. No code to run. |
-| Case studies | 4 files in `case-studies/` (55, 48, 65 and 58 lines) |
-| Diagrams | 4 Mermaid blocks, one per case study (counted from source 2026-11-15) |
-| README | 173 lines |
-| Numbers inside the case studies | Snapshot measured on 2026-11-08 |
-| Tests / CI | None. GitHub Actions is disabled. |
+| Kind | Markdown case studies with Mermaid diagrams, plus a static reading site built from them (no server-side code, no JavaScript, no tracking) |
+| Case studies | 6 files in `case-studies/` (106 to 180 lines each) *(in this PR: 4 rewritten, 2 new)* |
+| Sources | 102 numbered source notes: 97 private-repository citations as plain text and 5 from the private audit; the 150 PRs, commits and files behind them confirmed on GitHub on 2026-11-16 through a local-only map |
+| Re-check | 85 claims from the original four re-checked: 70 held, 10 corrected, 5 updated (see `docs/method.md`) |
+| Site | index, one page per study, method page; served on `127.0.0.1:6340` |
+| Tests / CI | 24 unittest tests; GitHub Actions is disabled |
 | Guards | gitleaks pre-commit and pre-push hooks; direct pushes to `main` refused |
-| PRs merged | 3 (#1, #2, #3) |
 | License | No license file, so default copyright applies |
 
 ## Contents
@@ -40,97 +40,105 @@ A public documentation repository. It holds four sanitized write-ups of private 
 10. Keeping this file true
 
 ## 1. What it is and who it's for
-- **Purpose:** let someone judge private engineering work from a short, honest write-up, since the source cannot be public.
-- **Why the source is private** (from the README): personal data, licensed data, trading research that must not read as investment claims, and a vendor protocol learned from interoperability analysis.
+- **Purpose:** let someone judge private engineering work from a short, honest, cited write-up, since the source cannot be public.
+- **Why the source is private:** personal data, licensed data, trading research that must not read as investment claims, a vendor protocol learned from interoperability analysis, and code with no license chosen yet.
 - **Audience:** engineers and reviewers. Each case study ends with questions a reviewer can use to probe understanding, and the README offers a live walkthrough of the code.
 - **How the work was built:** solo projects, with AI coding agents (mainly Claude Code) as implementers and Codex for read-only review. The owner sets requirements and safety rules, reviews and merges every change, and runs the systems.
 
 ## 2. How to run it
-There is no app to run. Read the files on GitHub, where the Mermaid diagrams render.
-
-To read locally:
-1. `git clone https://github.com/AlexRosen23/engineering-case-studies.git`
-2. `cd engineering-case-studies`
-3. `ls case-studies/` (four Markdown files)
-
-Checker (added 2026-11-16): `./scripts/run` checks sections, Mermaid blocks, relative links and a sanitization scan (Python 3, read-only). Its tests: `python3 -m unittest discover -s tests -v`.
-
-Optional, for contributors: `git config core.hooksPath .githooks` turns on the secret-scan hooks (needs `gitleaks` installed). No environment variables, ports or dev servers.
+- **Read on GitHub:** the Markdown and Mermaid diagrams render there.
+- **Reading site:** `./scripts/serve` builds `_site/` from the Markdown and serves it on loopback at port 6340 (`PORT` overrides). Python 3.9+, standard library only. Stop with Ctrl-C.
+- **Checker:** `./scripts/run` (same as `python3 scripts/check.py`). `python3 scripts/check.py --online` also confirms every citation on GitHub (needs an authenticated `gh` with access to the private repos).
+- **Tests:** `python3 -m unittest discover -s tests -v`.
+- Optional, for contributors: `git config core.hooksPath .githooks` turns on the secret-scan hooks (needs `gitleaks`).
 
 ## 3. Architecture at a glance
 ```
-README.md                 front page: purpose, principles, index, how it was made
-case-studies/             the four write-ups (Markdown + one Mermaid diagram each)
-.githooks/pre-commit      gitleaks scan of staged changes
-.githooks/pre-push        gitleaks scan of pushed commits + refuses direct pushes to main
-.gitleaks.toml            secret-scan settings
-.gitignore                baseline (no .env, keys, databases or dependencies)
+README.md                 front page: tagline, use cases, index, run it, how it's made
+case-studies/*.md         the six studies (13 sections, Mermaid, numbered sources, a meta line for the site)
+docs/method.md            how claims are checked + the 2026-11-16 corrections table
+data/repos.json           the public repositories a link may point to
+scripts/serve             build + serve the site on loopback
+scripts/build_site.py     Markdown -> HTML (footnotes, tables, lists, Mermaid -> SVG / message list)
+scripts/site.css          the only stylesheet (system fonts, light/dark, phone layout)
+scripts/run, check.py     the checker (structure, links, sanitization, citations, private exposure, site, --online)
+tests/test_check.py       fixture-repo tests + real-repo tests + serve smoke test
+.githooks/                gitleaks pre-commit and pre-push (+ main-branch guard)
 ```
-Publishing flow (from the README): measure the projects, record every claim with source and date in a private evidence bank, draft, run a written sanitization checklist, run gitleaks plus a pattern scan, then publish.
 
 ## 4. Features
 
-### The four case studies (`case-studies/`)
-All four share one outline so they can be compared: problem and audience, role, architecture (illustrative), key choices, verification, failures and tradeoffs, why the source is private, and questions. Each has a "My role" section that states which decisions were the owner's and that the code is agent-written.
-- **The Constellation** (`case-studies/the-constellation.md`): a local-first command center for AI coding agents. Covers agent observability and provenance, multi-provider LLM routing, a local voice assistant with a benchmark-driven model choice, and about 4,600 unit tests. Has an extra "Measured results" section, labeled as lab results.
-- **ELARA Command Deck** (`case-studies/elara-command-deck.md`): approving AI-agent actions from a physical USB pad. Covers human-in-the-loop approval, safety-first protocol design and hardware failure recovery.
-- **Scalp City** (`case-studies/scalp-city.md`): an auditable, paper-only market research platform. Covers tamper-evident append-only storage, a paper-only design enforced by tests, pre-registered evaluation and a hardware-fault incident. No strategy logic or results are published.
-- **The Second Move** (`case-studies/the-second-move.md`): an NFL tracking-data research pipeline over 22.7M frames. Covers synthetic-truth validation, a locked holdout and an honestly reported null result. Its middle sections follow the research (data scale, validation, main test, engineering) instead of "key choices" and "verification".
+### The six case studies (`case-studies/`)
+All share one outline: context, problem, constraints, my role, architecture (illustrative), approach, evidence, results and how they were measured, trade-offs and failures, what I'd do differently, why the source is private, questions, sources.
+- **The Constellation** (`the-constellation.md`): agent observability with honest status, verified-by-use model routing, a benchmark-driven local model choice, and *(in this PR)* the integration and live-update pipeline that ships parallel agent PRs into the live app, with its RED runs and their causes.
+- **PROVENANCE** (`provenance.md`) *(in this PR, new)*: a signed, hash-chained claim → evidence → human-review trail with an offline verifier, test vectors, adversarial and tenant-isolation tests and a restore drill.
+- **CHAOS MONKEY** (`chaos-monkey.md`) *(in this PR, new)*: a retry/idempotency chaos lab where hypothesis E4 failed in 5 of 5 seeds, traced to the retry throttle, with E7's confounded pass and signed evidence (125 of 125 runs verified).
+- **The Second Move** (`the-second-move.md`): an NFL tracking research pipeline with validated instruments, a locked holdout and a null result.
+- **ELARA Command Deck** (`elara-command-deck.md`): approving AI-agent actions from a USB pad, and the firmware boot loops.
+- **Scalp City** (`scalp-city.md`): tamper-evident append-only storage, a paper-only design enforced by tests, pre-registration, and a hardware fault caught by hashing. No strategy logic or results are published.
 
-### Honesty rules the write-ups follow (README "Principles")
-- **Every number measured, dated and sourced** *(live)*: counted from the project on 2026-11-08 or labeled as taken from project docs. Lab benchmarks say they are lab benchmarks.
-- **Failures get a section** *(live)*: each case study has "Failures and tradeoffs".
-- **AI authorship stated** *(live)*: each case study says the code is agent-written and lists the owner's decisions.
-- **Sanitized by rule** *(live)*: no client names or data, credentials, trading logic or parameters, licensed data or personal information. Diagrams carry no hostnames, ports or paths.
-- **Questions to probe** *(live)*: each case study ends with questions a reviewer can ask.
+### Citations and re-checks *(in this PR)*
+- **Numbered sources:** every claim's note names its source. Private repositories are cited as dated plain text ("Private repository (Scalp City): PR #14 (2026-10-26)") with no links, slugs, commit hashes or file paths (owner's decision, 2026-11-16); a few notes say "private evidence audit" and "not in git". Links are allowed only into public repositories listed in `data/repos.json`.
+- **Results rule:** every line of a "Results" section that contains a number carries a citation.
+- **Corrections in the open:** `docs/method.md` lists every claim that was corrected or updated on 2026-11-16, and each study marks its corrections.
 
-### README (`README.md`)
-- **Problem and approach comparison** *(live)*: why public repos, tech lists and demos fall short.
-- **Case-study index table** *(live)*: one row per study with what it shows.
-- **"What works today" table** *(live)*: item, status and how it was verified.
-- **How it works diagram** *(live)*: Mermaid flow from private repos to this repo.
-- **How it was built, limitations, repository map, testing and CI, related links** *(live)*. Related links point to three other public project repos and one public browser game.
+### Reading site (`scripts/serve`, `scripts/build_site.py`) *(in this PR)*
+- **Index** with one card per study (summary, topics, number of sources, evidence date) and a link to the method page.
+- **Study pages** with an "On this page" table of contents, numbered source list with back-links, flowcharts drawn as SVG with a text version, and sequence diagrams as a numbered message list.
+- **Navigation:** a "Case studies" nav on every page (the current page marked), so tools can plan screenshots from it.
+- **Accessible and phone-ready:** skip link, landmarks, one h1 per page, focus outlines, scrollable tables, light and dark themes, a single-column layout under 820px.
+- **No tracking:** no JavaScript, web fonts, cookies, analytics or third-party requests; `no-referrer`.
+
+### Checker (`scripts/run`, `scripts/check.py`)
+- **Structure:** 13 required sections, a Mermaid diagram and a meta line per study *(sections and meta in this PR)*.
+- **Links and sanitization:** relative links resolve; no emails, phone numbers, home paths or key-like strings.
+- **Citations** *(in this PR)*: refs and definitions match; each source is a link into a listed public repo, a dated private-repository citation, or the private audit; uncited numbers in Results fail.
+- **Private exposure** *(in this PR)*: fails on any URL, `owner/repo` or name-plus-PR-number reference to a non-public repo, any commit-hash-like token that is not a commit of this repo, and any file path that is not a file here, in the Markdown and in the built pages.
+- **Site** *(in this PR)*: builds into a temp folder; each page has lang, title, one h1, main landmark, viewport and nav; internal links and anchors resolve; nothing loads from another host; no scripts; the visible text passes a privacy scan (localhost addresses, private IPs, home paths, env files, placeholders, trading figures).
+- **`--online`** *(in this PR, owner only)*: reads a local-only map (never committed: `~/.config/engineering-case-studies/private-citations.json` or a git-ignored `data/*.local.json`) from each footnote to its real PRs, commits and files, requires the PR numbers in the text to match it, and confirms every item exists on GitHub.
 
 ### Safety hooks (`.githooks/`)
-- **Pre-commit secret scan** *(live once enabled)*: runs gitleaks on staged changes with redacted output; blocks the commit if gitleaks is missing or finds something.
+- **Pre-commit secret scan** *(live once enabled)*: gitleaks on staged changes; blocks if gitleaks is missing or finds something.
 - **Pre-push secret scan** *(live once enabled)*: scans commits the remote does not have yet.
-- **Main-branch guard** *(live once enabled)*: refuses direct pushes to `main`, including deleting it. The deliberate exception is `ALLOW_MAIN_PUSH=1` for one command. Changes go through pull requests.
+- **Main-branch guard** *(live once enabled)*: refuses direct pushes to `main` unless `ALLOW_MAIN_PUSH=1` is set for one command.
 
 ## 5. Integrations
-- No APIs, services or data sources.
-- Links out to other public repos: Morrowglass Model Foundry, The Inkfall Vault, Spectral Canary Works, and the LAST LEGEND browser game.
+- No APIs or services at runtime. The site is static files served by Python's standard-library server on loopback.
+- `--online` calls the GitHub API through `gh` (read-only), using the local-only citation map.
+- The portfolio site's nightly scanner can use the documented start command `./scripts/serve` and port 6340.
 - The hooks use the `gitleaks` command-line tool.
 
 ## 6. Data and privacy
-- Stores only Markdown text. No database, no user data, no telemetry.
-- Contains no secrets, client names, credentials, trading logic, licensed data or personal information, by the sanitization rule above.
-- Source repositories for the four projects are private and not included.
-- The Second Move's aggregate Kaggle notebook is *Planned* (see section 8).
+- Stores only Markdown, one JSON registry, a stylesheet and scripts. No database, no user data, no telemetry.
+- Contains no secrets, client names, credentials, trading logic, licensed row-level data or personal information, by the sanitization rule and the checker.
+- Nothing points into the private repositories: citations show only the project's display name, a PR number or the kind of document, and a date. The map to real PRs, commits and files stays local.
 
 ## 7. Tests and evidence
-- There is no application code. `scripts/check.py` (links, sections, diagrams, sanitization scan) and `tests/test_check.py` (8 tests) were added 2026-11-16; both pass on this branch.
-- Recorded checks (README, 2026-11-09): every relative link resolves to a file; each case study has the listed sections and one Mermaid block; a scan for emails, phone numbers, local paths and key-like strings found nothing.
-- Recorded (README): gitleaks and a pattern scan before the first push on 2026-11-08; README verified on 2026-11-11 against `main`.
-- Figures inside the case studies are a 2026-11-08 snapshot measured in the private repos and are not re-measured here.
+- `tests/test_check.py`: 24 tests (fixture repos for each checker rule including the private-exposure rule and the online map match, the site builder output, sequence-diagram rendering, the real repo passing, and `scripts/serve` answering on a loopback port). All pass on this branch.
+- `./scripts/run`: 0 problems on this branch. `python3 scripts/check.py --online` with the local map: 150 cited PRs, commits and files confirmed, 0 problems (2026-11-16).
+- The site was checked by eye at 1600×1000 and phone width, light and dark.
 
 ## 8. Known limits and gaps
-- **Snapshot that ages:** numbers describe 2026-11-08; one case study already notes a newer count.
-- **Not independently reproducible** without the source. The live walkthrough offer is the mitigation.
-- **Some figures are secondhand** (from project docs), and one validation in The Second Move was scored by an AI reviewer. Both are labeled where they appear.
-- **Planned:** refresh the numbers when a project reaches a milestone; publish The Second Move's aggregate Kaggle notebook before the 2027-01-06 deadline.
+- **Private sources prove nothing to outsiders.** The live walkthrough is the mitigation.
+- **Snapshots age:** each study gives its evidence date; numbers move as the projects change.
+- **Some figures are secondhand:** a few come only from the 2026-11-08 private audit, and one validation in The Second Move was AI-scored. Both are labeled.
+- **The Mermaid renderer is a subset:** flowcharts and sequence diagrams only; other diagram types fall back to the source text.
+- **Planned:** publish The Second Move's aggregate Kaggle notebook before 2027-01-06.
 - No license file; no CI.
 
 ## 9. Change log
 | Date | PR | Change |
 | --- | --- | --- |
-| 2026-11-16 | this PR | Added `scripts/check.py`, `scripts/run`, `tests/` and a "Run it" README section. |
+| 2026-11-16 | this PR | Re-checked every claim against GitHub (10 corrected, 5 updated); rewrote the four studies to 13 sections with numbered sources; added PROVENANCE and CHAOS MONKEY; added the reading site (`scripts/serve`), citation and site checks, `--online`; private sources cited as plain text with a private-exposure rule (owner's decision); new tests; README tagline, use cases and Run it. |
+| 2026-11-16 | #5 | Added `scripts/check.py`, `scripts/run`, `tests/` and a "Run it" README section. |
+| 2026-11-16 | #4 | Added FEATURES.md. |
 | 2026-11-11 | #3 | README: refresh verified ref, add PR #2 to history |
 | 2026-11-10 | #2 | Link the merged README PR; map the hook files; hooks point to README |
 | 2026-11-09 | #1 | Full README write-up (why the source is private, how case studies are made) |
 | 2026-11-08 | none | Initial commit: four sanitized case studies, hooks, gitleaks config |
 
 ## Keeping this file true
-- **Same PR, same change:** a PR that adds, edits or removes a case study, the README structure or a hook updates this file in that PR.
-- **Status moves with reality:** change a status word when the thing changes.
+- **Same PR, same change:** a PR that adds, edits or removes a case study, the site, the checker or a hook updates this file in that PR.
+- **Status moves with reality:** change a status word when the thing changes; drop "in this PR" once merged.
 - **Only what is true:** no secrets, no private-repo details beyond what the case studies already publish. Public repo: nothing goes in this file that is not already public here.
-- **Repo gate:** gitleaks hooks stay on; changes go through pull requests, and Actions stay disabled unless the owner approves.
+- **Repo gate:** `./scripts/run` and the tests pass; gitleaks hooks stay on; changes go through pull requests; Actions stay disabled unless the owner approves.

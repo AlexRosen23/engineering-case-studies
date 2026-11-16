@@ -1,0 +1,8 @@
+#!/bin/sh
+# Build the reading site from the Markdown, then serve it on this machine only: http://127.0.0.1:6340/
+# Static files only (Python's standard-library file server, bound to loopback). Stop it with Ctrl-C.
+set -e
+here="$(cd "$(dirname "$0")/.." && pwd)"
+python3 "$here/scripts/build_site.py" "$here/_site"
+echo "serving $here/_site on port ${PORT:-6340} (loopback only)"
+exec python3 -m http.server "${PORT:-6340}" --bind 127.0.0.1 --directory "$here/_site"
