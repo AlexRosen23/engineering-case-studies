@@ -1,5 +1,18 @@
 # Engineering case studies: Alex T. Rosen
 
+## In plain words
+
+**What it is:** a portfolio of six write-ups about private software projects, with a checker that stops any number from being published without a citation.
+
+**What you get:**
+- Six case studies (agent observability, a signed evidence trail, a chaos lab, a sports-analytics research pipeline, an approval pad for AI-agent actions, a paper-trading system), each following the same structure from context to "what I'd do differently".
+- Numbered source notes on every figure, naming the pull request, commit or report file it came from.
+- A small local reading site built from the same Markdown, plus a method page listing every claim that was corrected on re-checking.
+
+**How it works:** the Markdown in `case-studies/` is the source of truth; `scripts/check.py` enforces structure, citations, links and sanitization, and `scripts/build_site.py` renders the static site (see [How it works](#how-it-works)).
+
+**Try it:** read the [case studies](#case-studies) on GitHub, or run `./scripts/serve` and open http://127.0.0.1:6340/ (Python standard library only). `./scripts/run` runs the checks.
+
 **Cited, sanitized write-ups of six private software projects, with a small local reading site and a checker that makes sure every figure is cited to its pull request, commit or report file.**
 
 I'm an Informatics graduate (Indiana University, 2025) and a cloud/data consultant. I build AI-agent systems, data
