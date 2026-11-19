@@ -4,26 +4,26 @@ A public documentation repository with a small local reading site. It holds six 
 
 **This is the source-of-truth features list.** Every PR that adds, changes, removes or switches off something a person can see or use updates this file in the same PR (see "Keeping this file true").
 
-- **Repo:** AlexRosen23/engineering-case-studies (public) · **Folder:** `~/Desktop/Claude Projects/Engineering Case Studies`
-- **Status:** Published (documentation plus a static local site) · **Version:** none · **`main`:** `665be2c` before this PR
+- **Repo:** AlexRosen23/engineering-case-studies (public)
+- **Status:** Published (documentation plus a static local site) · **Version:** none · **`main`:** `779c11a` (PR #6 merged)
 - **Last updated:** 2026-11-16, written from the case studies, the checker, the site builder and the PR history.
 
 **Status words** (a feature with no status word is live):
 | Word | Means |
 | --- | --- |
 | *Live* | on `main` and readable on GitHub or through `./scripts/serve` |
-| *In this PR* | added or changed by the open PR named in the change log, not merged yet |
+| *In this PR* | added or changed by the open PR named in the change log, not merged yet (none right now) |
 | *Planned* | named in the README as a next step, not done |
 
 ## At a glance
 | | |
 | --- | --- |
 | Kind | Markdown case studies with Mermaid diagrams, plus a static reading site built from them (no server-side code, no JavaScript, no tracking) |
-| Case studies | 6 files in `case-studies/` (106 to 180 lines each) *(in this PR: 4 rewritten, 2 new)* |
+| Case studies | 6 files in `case-studies/` (106 to 180 lines each) |
 | Sources | 102 numbered source notes: 97 private-repository citations as plain text and 5 from the private audit; the 150 PRs, commits and files behind them confirmed on GitHub on 2026-11-16 through a local-only map |
 | Re-check | 85 claims from the original four re-checked: 70 held, 10 corrected, 5 updated (see `docs/method.md`) |
 | Site | index, one page per study, method page; served on `127.0.0.1:6340` |
-| Tests / CI | 24 unittest tests; GitHub Actions is disabled |
+| Tests / CI | 25 unittest tests; GitHub Actions is disabled |
 | Guards | gitleaks pre-commit and pre-push hooks; direct pushes to `main` refused |
 | License | No license file, so default copyright applies |
 
@@ -70,19 +70,19 @@ tests/test_check.py       fixture-repo tests + real-repo tests + serve smoke tes
 
 ### The six case studies (`case-studies/`)
 All share one outline: context, problem, constraints, my role, architecture (illustrative), approach, evidence, results and how they were measured, trade-offs and failures, what I'd do differently, why the source is private, questions, sources.
-- **The Constellation** (`the-constellation.md`): agent observability with honest status, verified-by-use model routing, a benchmark-driven local model choice, and *(in this PR)* the integration and live-update pipeline that ships parallel agent PRs into the live app, with its RED runs and their causes.
-- **PROVENANCE** (`provenance.md`) *(in this PR, new)*: a signed, hash-chained claim → evidence → human-review trail with an offline verifier, test vectors, adversarial and tenant-isolation tests and a restore drill.
-- **CHAOS MONKEY** (`chaos-monkey.md`) *(in this PR, new)*: a retry/idempotency chaos lab where hypothesis E4 failed in 5 of 5 seeds, traced to the retry throttle, with E7's confounded pass and signed evidence (125 of 125 runs verified).
+- **The Constellation** (`the-constellation.md`): agent observability with honest status, verified-by-use model routing, a benchmark-driven local model choice, and the integration and live-update pipeline that ships parallel agent PRs into the live app, with its RED runs and their causes.
+- **PROVENANCE** (`provenance.md`): a signed, hash-chained claim → evidence → human-review trail with an offline verifier, test vectors, adversarial and tenant-isolation tests and a restore drill.
+- **CHAOS MONKEY** (`chaos-monkey.md`): a retry/idempotency chaos lab where hypothesis E4 failed in 5 of 5 seeds, traced to the retry throttle, with E7's confounded pass and signed evidence (125 of 125 runs verified).
 - **The Second Move** (`the-second-move.md`): an NFL tracking research pipeline with validated instruments, a locked holdout and a null result.
 - **ELARA Command Deck** (`elara-command-deck.md`): approving AI-agent actions from a USB pad, and the firmware boot loops.
 - **Scalp City** (`scalp-city.md`): tamper-evident append-only storage, a paper-only design enforced by tests, pre-registration, and a hardware fault caught by hashing. No strategy logic or results are published.
 
-### Citations and re-checks *(in this PR)*
+### Citations and re-checks
 - **Numbered sources:** every claim's note names its source. Private repositories are cited as dated plain text ("Private repository (Scalp City): PR #14 (2026-10-26)") with no links, slugs, commit hashes or file paths (owner's decision, 2026-11-16); a few notes say "private evidence audit" and "not in git". Links are allowed only into public repositories listed in `data/repos.json`.
 - **Results rule:** every line of a "Results" section that contains a number carries a citation.
 - **Corrections in the open:** `docs/method.md` lists every claim that was corrected or updated on 2026-11-16, and each study marks its corrections.
 
-### Reading site (`scripts/serve`, `scripts/build_site.py`) *(in this PR)*
+### Reading site (`scripts/serve`, `scripts/build_site.py`)
 - **Index** with one card per study (summary, topics, number of sources, evidence date) and a link to the method page.
 - **Study pages** with an "On this page" table of contents, numbered source list with back-links, flowcharts drawn as SVG with a text version, and sequence diagrams as a numbered message list.
 - **Navigation:** a "Case studies" nav on every page (the current page marked), so tools can plan screenshots from it.
@@ -90,12 +90,12 @@ All share one outline: context, problem, constraints, my role, architecture (ill
 - **No tracking:** no JavaScript, web fonts, cookies, analytics or third-party requests; `no-referrer`.
 
 ### Checker (`scripts/run`, `scripts/check.py`)
-- **Structure:** 13 required sections, a Mermaid diagram and a meta line per study *(sections and meta in this PR)*.
+- **Structure:** 13 required sections, a Mermaid diagram and a meta line per study.
 - **Links and sanitization:** relative links resolve; no emails, phone numbers, home paths or key-like strings.
-- **Citations** *(in this PR)*: refs and definitions match; each source is a link into a listed public repo, a dated private-repository citation, or the private audit; uncited numbers in Results fail.
-- **Private exposure** *(in this PR)*: fails on any URL, `owner/repo` or name-plus-PR-number reference to a non-public repo, any commit-hash-like token that is not a commit of this repo, and any file path that is not a file here, in the Markdown and in the built pages.
-- **Site** *(in this PR)*: builds into a temp folder; each page has lang, title, one h1, main landmark, viewport and nav; internal links and anchors resolve; nothing loads from another host; no scripts; the visible text passes a privacy scan (localhost addresses, private IPs, home paths, env files, placeholders, trading figures).
-- **`--online`** *(in this PR, owner only)*: reads a local-only map (never committed: `~/.config/engineering-case-studies/private-citations.json` or a git-ignored `data/*.local.json`) from each footnote to its real PRs, commits and files, requires the PR numbers in the text to match it, and confirms every item exists on GitHub.
+- **Citations**: refs and definitions match; each source is a link into a listed public repo, a dated private-repository citation, or the private audit; uncited numbers in Results fail.
+- **Private exposure**: fails on any URL, `owner/repo` or name-plus-PR-number reference to a non-public repo, any commit-hash-like token that is not a commit of this repo, and any file path that is not a file here, in the Markdown and in the built pages.
+- **Site**: builds into a temp folder; each page has lang, title, one h1, main landmark, viewport and nav; internal links and anchors resolve; nothing loads from another host; no scripts; the visible text passes a privacy scan (localhost addresses, private IPs, home paths, env files, placeholders, trading figures).
+- **`--online`** *(owner only)*: reads a local-only map (never committed: `~/.config/engineering-case-studies/private-citations.json` or a git-ignored `data/*.local.json`) from each footnote to its real PRs, commits and files, requires the PR numbers in the text to match it, and confirms every item exists on GitHub.
 
 ### Safety hooks (`.githooks/`)
 - **Pre-commit secret scan** *(live once enabled)*: gitleaks on staged changes; blocks if gitleaks is missing or finds something.
@@ -114,8 +114,8 @@ All share one outline: context, problem, constraints, my role, architecture (ill
 - Nothing points into the private repositories: citations show only the project's display name, a PR number or the kind of document, and a date. The map to real PRs, commits and files stays local.
 
 ## 7. Tests and evidence
-- `tests/test_check.py`: 24 tests (fixture repos for each checker rule including the private-exposure rule and the online map match, the site builder output, sequence-diagram rendering, the real repo passing, and `scripts/serve` answering on a loopback port). All pass on this branch.
-- `./scripts/run`: 0 problems on this branch. `python3 scripts/check.py --online` with the local map: 150 cited PRs, commits and files confirmed, 0 problems (2026-11-16).
+- `tests/test_check.py`: 25 tests (fixture repos for each checker rule including the private-exposure rule and the online map match, the site builder output, sequence-diagram rendering, the real repo passing, and `scripts/serve` answering on a loopback port). All pass on this branch.
+- `./scripts/run`: 0 problems on `main`. `python3 scripts/check.py --online` with the local map: 150 cited PRs, commits and files confirmed, 0 problems (2026-11-16).
 - The site was checked by eye at 1600×1000 and phone width, light and dark.
 
 ## 8. Known limits and gaps
@@ -129,7 +129,7 @@ All share one outline: context, problem, constraints, my role, architecture (ill
 ## 9. Change log
 | Date | PR | Change |
 | --- | --- | --- |
-| 2026-11-16 | this PR | Re-checked every claim against GitHub (10 corrected, 5 updated); rewrote the four studies to 13 sections with numbered sources; added PROVENANCE and CHAOS MONKEY; added the reading site (`scripts/serve`), citation and site checks, `--online`; private sources cited as plain text with a private-exposure rule (owner's decision); new tests; README tagline, use cases and Run it. |
+| 2026-11-16 | #6 | Re-checked every claim against GitHub (10 corrected, 5 updated); rewrote the four studies to 13 sections with numbered sources; added PROVENANCE and CHAOS MONKEY; added the reading site (`scripts/serve`), citation and site checks, `--online`; private sources cited as plain text with a private-exposure rule (owner's decision); new tests; README tagline, use cases and Run it. |
 | 2026-11-16 | #5 | Added `scripts/check.py`, `scripts/run`, `tests/` and a "Run it" README section. |
 | 2026-11-16 | #4 | Added FEATURES.md. |
 | 2026-11-11 | #3 | README: refresh verified ref, add PR #2 to history |

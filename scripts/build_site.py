@@ -440,7 +440,10 @@ def load_studies(root=ROOT):
         with open(os.path.join(d, f), encoding="utf-8") as fh:
             text = fh.read()
         m = META.search(text)
-        meta = json.loads(m.group(1)) if m else {}
+        try:
+            meta = json.loads(m.group(1)) if m else {}
+        except ValueError as e:
+            raise SystemExit(f"{f}: the meta line is not valid JSON ({e})")
         h1 = re.search(r"^#\s+(.+)$", text, re.M)
         meta.setdefault("order", 99)
         meta.setdefault("nav", h1.group(1).split(":")[0].strip() if h1 else f[:-3])

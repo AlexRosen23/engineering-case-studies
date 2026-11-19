@@ -325,8 +325,11 @@ def load_private_map(root):
     for cand in ([os.environ["CASE_STUDY_CITATIONS"]] if os.environ.get("CASE_STUDY_CITATIONS") else []) + [
             os.path.join(root, MAP_PATHS[0]), MAP_PATHS[1]]:
         if os.path.exists(cand):
-            with open(cand, encoding="utf-8") as fh:
-                return json.load(fh), cand
+            try:
+                with open(cand, encoding="utf-8") as fh:
+                    return json.load(fh), cand
+            except ValueError as e:
+                raise SystemExit(f"online: the local private-citation map is not valid JSON ({e})")
     return None, None
 
 
