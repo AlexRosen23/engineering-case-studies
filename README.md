@@ -63,7 +63,7 @@ links and privacy scan):
 ./scripts/run
 ```
 
-Run the tests (24 tests, a few seconds):
+Run the tests (25 tests, a few seconds):
 
 ```
 python3 -m unittest discover -s tests -v
@@ -154,7 +154,7 @@ flowchart LR
   checker ([PR #5](https://github.com/AlexRosen23/engineering-case-studies/pull/5)). Then, on my request to "go a
   little bit deeper", every claim was re-checked against GitHub, the four studies were rewritten to the 13-section
   structure with numbered sources, PROVENANCE and CHAOS MONKEY were added, and the reading site and citation checks
-  were built.
+  were built ([PR #6](https://github.com/AlexRosen23/engineering-case-studies/pull/6)).
 
 The drafts are written with Claude Code from the repositories and the evidence audit, and I approve publishing them.
 
@@ -185,7 +185,7 @@ The drafts are written with Claude Code from the repositories and the evidence a
 
 ## Testing and CI
 
-`python3 -m unittest discover -s tests -v` runs 24 tests: the checker against throwaway fixture repositories (each
+`python3 -m unittest discover -s tests -v` runs 25 tests: the checker against throwaway fixture repositories (each
 rule fires when it should and stays quiet when it shouldn't), the site builder (landmarks,
 source lists, diagrams, no scripts), the real repository passing the checker, and the serve script answering on a
 loopback port. GitHub Actions is disabled on this repository; everything runs locally.

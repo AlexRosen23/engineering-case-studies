@@ -166,6 +166,23 @@ class Checker(unittest.TestCase):
         probs, _ = check.check_private_map(texts, {})
         self.assertTrue(any("no entry" in x for x in probs), probs)
 
+    def test_malformed_citation_map_is_a_clear_error_not_a_traceback(self):
+        with tempfile.TemporaryDirectory() as d:
+            bad = os.path.join(d, "map.json")
+            with open(bad, "w", encoding="utf-8") as fh:
+                fh.write("{not json")
+            old = os.environ.get("CASE_STUDY_CITATIONS")
+            os.environ["CASE_STUDY_CITATIONS"] = bad
+            try:
+                with self.assertRaises(SystemExit) as cm:
+                    check.load_private_map(d)
+                self.assertIn("not valid JSON", str(cm.exception))
+            finally:
+                if old is None:
+                    del os.environ["CASE_STUDY_CITATIONS"]
+                else:
+                    os.environ["CASE_STUDY_CITATIONS"] = old
+
     def test_uncited_number_in_results_is_reported(self):
         p = self.problems(study=GOOD.replace("Measured 3 times[^one].", "Measured 3 times."))
         self.assertTrue(any("uncited number in Results" in x for x in p), p)
