@@ -1,0 +1,3 @@
+#!/bin/sh
+# Runs the unit tests (python3 stdlib unittest, no dependencies). Extra arguments are ignored.
+cd "$(dirname "$0")/.." && exec python3 -m unittest discover -s tests
