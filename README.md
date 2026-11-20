@@ -1,5 +1,7 @@
 # Engineering case studies: Alex T. Rosen
 
+**Sanitized engineering case studies**
+
 ## In plain words
 
 **What it is:** a portfolio of six write-ups about private software projects, with a checker that stops any number from being published without a citation.
